@@ -1,0 +1,15 @@
+{
+  "id": "benzonsalazar/ps-s6e1-02-feature-engineering",
+  "title": "PS S6E1 - 02 Feature Engineering",
+  "code_file": "02_Feature_Engineering.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": ["benzonsalazar/kaggle-utils"],
+  "competition_sources": ["playground-series-s6e1"],
+  "kernel_sources": [],
+  "model_sources": []
+}
