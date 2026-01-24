@@ -20,6 +20,7 @@ src/reports/*.html
 src/utils/config/config.json
 src/utils/config/tableau_project_ids.json
 src/utils/config/emailconfig.ini
+src/utils/config/checklist.md
 
 */__pycache__/
 
