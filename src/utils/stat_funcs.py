@@ -34,8 +34,18 @@ def cohend(sample_group1, sample_group2):
   >>> cohend(male_scores, female_scores)
   2.236...
   """
+
+  # Calculate the size of the samples
   n1, n2 = len(sample_group1), len(sample_group2)
+
+  # Calculate the variance of the samples
   s1, s2 = np.var(sample_group1, ddof=1), np.var(sample_group2, ddof=1)
+
+  # Calculate the pooled standard deviation
   s_pooled = np.sqrt(((n1 - 1) * s1 + (n2 - 1) * s2) / (n1 + n2 - 2))
+
+  # Calculate the means of the samples
   u1, u2 = np.mean(sample_group1), np.mean(sample_group2)
+
+  # Calculate the effecti size
   return (u1 - u2) / s_pooled
