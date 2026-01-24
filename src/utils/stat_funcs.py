@@ -1,4 +1,7 @@
 import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
 
 def cohend(sample_group1, sample_group2):
   """
@@ -49,3 +52,65 @@ def cohend(sample_group1, sample_group2):
 
   # Calculate the effecti size
   return (u1 - u2) / s_pooled
+
+def anova_eta_squared(df: pd.DataFrame, outcome_col: str, group_col: str):
+  """
+  Run a one-way ANOVA (via OLS) for a continuous outcome across a categorical group,
+  and compute eta-squared (η²) as an effect size.
+
+  This function fits the model:
+      outcome_col ~ C(group_col)
+  using Ordinary Least Squares (OLS), then produces a Type-II ANOVA table and η².
+
+  Eta-squared is defined as:
+      η² = SS_between / SS_total
+  where SS_between is the sum of squares attributable to the grouping factor and
+  SS_total = SS_between + SS_residual.
+
+  Parameters
+  ----------
+  df : pandas.DataFrame
+    Input dataframe containing the outcome and group columns.
+  outcome_col : str
+    Name of the numeric outcome column (e.g., "exam_score").
+  group_col : str
+    Name of the categorical grouping column (e.g., "gender", "course").
+
+  Returns
+  -------
+  anova_table : pandas.DataFrame
+    Statsmodels ANOVA table (Type-II) with sum of squares, degrees of freedom,
+    F-statistic, and p-value for the grouping factor.
+  eta_sq : float
+    Eta-squared (η²), the proportion of total variance in the outcome explained
+    by the grouping factor.
+
+  Notes
+  -----
+  - Rows with missing values in `outcome_col` or `group_col` are dropped.
+  - This uses classic one-way ANOVA assumptions (independent observations,
+    approximately normal residuals, and equal variances across groups).
+    With very large samples, the p-value can be extremely small even when η² is tiny.
+  - If you suspect unequal variances and/or highly imbalanced group sizes,
+    consider Welch’s ANOVA for the hypothesis test, and report an appropriate effect size.
+
+  Examples
+  --------
+  >>> anova_tbl, eta2 = anova_eta_squared(df, "exam_score", "gender")
+  >>> print(anova_tbl)
+  >>> print(eta2)
+  """
+  df = df.dropna(subset=[outcome_col, group_col]).copy()
+
+  # 1) One-way ANOVA via Ordinary Least Squares (OLS)
+  model = smf.ols(f"{outcome_col} ~ C({group_col})", data=df).fit()
+  anova_table = sm.stats.anova_lm(model, typ=2)  # typ=2 is standard for one factor
+
+  # 2) Eta-squared (η²) = SS_between / SS_total
+  factor_row = f"C({group_col})"
+  ss_between = anova_table.loc[factor_row, "sum_sq"]
+  ss_resid = anova_table.loc["Residual", "sum_sq"]
+  ss_total = ss_between + ss_resid
+  eta_sq = ss_between / ss_total
+
+  return anova_table, eta_sq
