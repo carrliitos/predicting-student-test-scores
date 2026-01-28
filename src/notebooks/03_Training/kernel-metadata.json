@@ -1,0 +1,15 @@
+{
+  "id": "benzonsalazar/ps-s6e1-03-training",
+  "title": "PS S6E1 - 03 Training",
+  "code_file": "03_Training.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "false",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": ["benzonsalazar/kaggle-utils"],
+  "competition_sources": ["playground-series-s6e1"],
+  "kernel_sources": [],
+  "model_sources": []
+}
