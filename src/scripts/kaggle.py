@@ -24,7 +24,7 @@ directory = context.get_context(os.path.abspath(__file__))
 logger_name = Path(__file__).stem
 kaggle = logger.setup_logger(logger_name, f"{directory}\\logs\\main.log")
 data_path = f"{directory}\\data"
-version_num = "v01"
+version_num = "v02"
 
 plt.style.use('seaborn-v0_8-whitegrid')
 sns.set_palette('husl')
@@ -34,7 +34,16 @@ def add_linear_features(df: pd.DataFrame) -> pd.DataFrame:
   Add minimal interaction / curvature terms that are friendly for linear models.
   Assumes numeric columns exist (possibly scaled) with these names.
   """
-  required = {"study_hours", "class_attendance"}
+  required = {"study_hours",
+              "sleep_hours", 
+              "class_attendance", 
+              "exam_difficulty_hard", 
+              "exam_difficulty_moderate",
+              "sleep_quality_good",
+              "sleep_quality_poor",
+              "study_method_mixed",
+              "facility_rating_low",
+              "facility_rating_medium"}
   missing = required - set(df.columns)
   if missing:
     raise KeyError(f"Missing required columns for linear features: {sorted(missing)}")
@@ -42,7 +51,21 @@ def add_linear_features(df: pd.DataFrame) -> pd.DataFrame:
   return (
     df.assign(
       study_hours_attendance=lambda x: x["study_hours"] * x["class_attendance"],
+
+      study_hours_exam_difficulty__hard=lambda x: x["study_hours"] * x["exam_difficulty_hard"],
+      study_hours_exam_difficulty__moderate=lambda x: x["study_hours"] * x["exam_difficulty_moderate"],
+
+      study_hours_sleep_quality__good=lambda x: x["study_hours"] * x["sleep_quality_good"],
+      study_hours_sleep_quality__poor=lambda x: x["study_hours"] * x["sleep_quality_poor"],
+
+      study_method_mixed_facility_rating__low=lambda x: x["study_method_mixed"] * x["facility_rating_low"],
+      study_method_mixed_facility_rating__medium=lambda x: x["study_method_mixed"] * x["facility_rating_medium"],
+
+      study_method_mixed_exam_difficulty__hard=lambda x: x["study_method_mixed"] * x["exam_difficulty_hard"],
+      study_method_mixed_exam_difficulty__moderate=lambda x: x["study_method_mixed"] * x["exam_difficulty_moderate"],
+
       study_hours_curve=lambda x: x["study_hours"] ** 2,
+      sleep_hours_curve=lambda x: x["sleep_hours"] ** 2,
     )
   )
 
@@ -106,7 +129,7 @@ def go():
     test_pred = lr.predict(X_test_enc)
 
     submission = pd.DataFrame({"id": test_df["id"], "exam_score": test_pred})
-    submission_path = Path(f"{directory}/data/submission.csv")
+    submission_path = Path(f"{directory}/data/{version_num}-submission.csv")
     submission.to_csv(submission_path, index=False)
     kaggle.info(f"Saved: {submission_path.resolve()}")
   except ConnectionError as connection_error:
