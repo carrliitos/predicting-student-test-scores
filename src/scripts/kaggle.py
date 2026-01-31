@@ -24,7 +24,7 @@ directory = context.get_context(os.path.abspath(__file__))
 logger_name = Path(__file__).stem
 kaggle = logger.setup_logger(logger_name, f"{directory}\\logs\\main.log")
 data_path = f"{directory}\\data"
-version_num = "v03"
+version_num = "v05"
 
 plt.style.use('seaborn-v0_8-whitegrid')
 sns.set_palette('husl')
@@ -66,8 +66,12 @@ def add_linear_features(df: pd.DataFrame) -> pd.DataFrame:
       study_method_mixed_exam_difficulty__hard=lambda x: x["study_method_mixed"] * x["exam_difficulty_hard"],
       study_method_mixed_exam_difficulty__moderate=lambda x: x["study_method_mixed"] * x["exam_difficulty_moderate"],
 
+      class_attendance_exam_difficulty__hard=lambda x: x["class_attendance"] * x["exam_difficulty_hard"],
+      class_attendance_exam_difficulty__moderate=lambda x: x["class_attendance"] * x["exam_difficulty_moderate"],
+
       study_hours_curve=lambda x: x["study_hours"] ** 2,
-      sleep_hours_curve=lambda x: x["sleep_hours"] ** 2
+      sleep_hours_curve=lambda x: x["sleep_hours"] ** 2,
+      class_attendance_curve=lambda x: x["class_attendance"] ** 2
     )
   )
 
